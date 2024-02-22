@@ -1,0 +1,49 @@
+<!doctype html>
+<html style="width: 100%; height: 100%">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      [data-behind-globe="true"] {
+        opacity: 0.5;
+      }
+
+      [data-behind-globe="false"] {
+        opacity: 1;
+      }
+    </style>
+    <script type="importmap" defer>
+      {
+        "imports": {
+          "three": "../node_modules/three/build/three.module.js",
+          "vector-globe": "../dist/index.js"
+        }
+      }
+    </script>
+    <script type="module" defer>
+      import VectorGlobe from 'vector-globe';
+      const vectorGlobe = new VectorGlobe({container: document.querySelector('div')});
+      const button = document.getElementById('test');
+      const button2 = document.getElementById('test2');
+      const point = document.createElement('div');
+        point.style.width = '5px';
+        point.style.height = '5px';
+        point.style.backgroundColor = 'red';
+        point.style.borderRadius = '50%';
+      vectorGlobe.addPoint({coordinates: [10.7522, 59.9139], element: point});
+      button.addEventListener('click', () => {
+        vectorGlobe.rotateTo({
+          targetPoint: [10.7522, 59.9139],
+        });
+      });
+      button2.addEventListener('click', () => {
+        vectorGlobe.zoom();
+      });
+    </script>
+  </head>
+  <body style="margin: 0; width: 100%; height: 150vh">
+    <button id="test">Test</button>
+    <button id="test2">Test2</button>
+    <div style="margin: 0; width: 100%; height: 100vh"></div>
+  </body>
+</html>
