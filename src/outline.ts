@@ -77,6 +77,7 @@ class Outline {
   public dispose() {
     this.container.removeEventListener('focus', this.onFocus.bind(this));
     this.container.removeEventListener('blur', this.onBlur.bind(this));
+    this.container.removeChild(this.div);
   }
 }
 

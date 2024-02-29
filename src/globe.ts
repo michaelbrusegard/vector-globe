@@ -202,6 +202,10 @@ class Globe extends Group {
       this.animateVectorHover();
     }
   }
+
+  public dispose() {
+    this.mesh.geometry.dispose();
+  }
 }
 
 export { Globe };

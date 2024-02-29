@@ -64,8 +64,11 @@ class Points {
     this.objects = [];
   }
 
-  public dispose() {
+  public dispose(container: HTMLElement) {
     this.clear();
+    for (const point of this.objects) {
+      container.removeChild(point.element);
+    }
   }
 }
 

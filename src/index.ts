@@ -128,10 +128,12 @@ class VectorGlobe {
     );
 
     this.outline.dispose();
+    this.globe.dispose();
     this.pointer.dispose();
     this.controls.dispose();
     this.renderer.dispose();
-    this.points.dispose();
+    this.points.dispose(this.container);
+    this.container.removeChild(this.renderer.domElement);
   }
 
   public rotateTo({
