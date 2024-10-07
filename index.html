@@ -17,6 +17,12 @@
       import VectorGlobe from 'vector-globe';
 
       const vectorGlobe = new VectorGlobe();
+
+      vectorGlobe.start();
+
+      window.addEventListener('beforeunload', () => {
+        vectorGlobe.stop();
+      });
     </script>
   </head>
   <body style="margin: 0; width: 100%; height: 100%; overflow: hidden"></body>

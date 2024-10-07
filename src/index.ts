@@ -24,17 +24,7 @@ class VectorGlobe {
   private pointer: Pointer;
   private points: Points;
 
-  constructor({
-    container = document.body,
-    geojson,
-    detailLevel = 'medium',
-    countries = true,
-  }: {
-    container?: HTMLElement;
-    geojson?: FeatureCollection;
-    detailLevel?: 'low' | 'medium' | 'high';
-    countries?: boolean;
-  } = {}) {
+  constructor(container: HTMLElement = document.body) {
     this.container = container;
     this.container.style.outline = 'none';
     this.container.style.position = 'relative';
@@ -42,11 +32,9 @@ class VectorGlobe {
     this.container.style.justifyContent = 'center';
     this.container.style.alignItems = 'center';
 
+    this.globe = new Globe();
     this.outline = new Outline(this.container);
-
     this.scene = new Scene();
-
-    this.globe = new Globe(geojson, countries, detailLevel);
     this.scene.add(this.globe);
 
     this.camera = new PerspectiveCamera();
@@ -70,6 +58,10 @@ class VectorGlobe {
       this.renderer.domElement,
       this.pointer,
     );
+  }
+
+  public start() {
+    this.animate();
     this.controls.listenToKeyEvents(this.container);
 
     window.addEventListener('resize', this.onWindowResize.bind(this));
@@ -85,6 +77,22 @@ class VectorGlobe {
     if (!this.pointer.getMeshIntersection()) {
       this.container.blur();
     }
+  }
+
+  public stop() {
+    window.removeEventListener('resize', this.onWindowResize.bind(this));
+    this.container.removeEventListener(
+      'mousedown',
+      this.onMouseDown.bind(this),
+    );
+
+    this.outline.dispose();
+    this.globe.dispose();
+    this.pointer.dispose();
+    this.controls.dispose();
+    this.renderer.dispose();
+    this.points.dispose(this.container);
+    this.container.removeChild(this.renderer.domElement);
   }
 
   private onWindowResize() {
@@ -118,22 +126,6 @@ class VectorGlobe {
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
     this.points.update();
-  }
-
-  public dispose() {
-    window.removeEventListener('resize', this.onWindowResize.bind(this));
-    this.container.removeEventListener(
-      'mousedown',
-      this.onMouseDown.bind(this),
-    );
-
-    this.outline.dispose();
-    this.globe.dispose();
-    this.pointer.dispose();
-    this.controls.dispose();
-    this.renderer.dispose();
-    this.points.dispose(this.container);
-    this.container.removeChild(this.renderer.domElement);
   }
 
   public rotateTo({

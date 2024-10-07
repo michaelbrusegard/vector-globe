@@ -15,70 +15,44 @@ import { cartesianToSpherical } from './geometry';
 import { type FeatureCollection, getGeojson } from './geojson';
 
 class Globe extends Group {
-  public mesh: Mesh;
-  public globeMaterial: MeshBasicMaterial;
-  public axisMaterial: LineBasicMaterial;
-  public vectorMaterial: LineBasicMaterial;
-  public vectorHover: boolean;
-  public vectorHoverMaterial: LineBasicMaterial;
-  public vectorHoverScale: number;
-  public vectorHoverAnimationDuration: number;
-  public vectorHoverease: (t: number) => number;
-  private _earthTilt: boolean;
-  private axis: Group;
-  private vectors: Group;
-  private lineVectors: LineVector[];
-  public intersectingVector: LineVector | null;
-  constructor(
-    geojson: FeatureCollection | undefined,
-    countries: boolean,
-    detailLevel: 'low' | 'medium' | 'high',
-  ) {
+  public mesh = new Mesh();
+  public globeMaterial = new MeshBasicMaterial({
+    color: 0x080808,
+    transparent: true,
+    opacity: 0.9,
+  });
+  public axisMaterial = new LineBasicMaterial({
+    color: 0x444444,
+  });
+  public vectorMaterial = new LineBasicMaterial({
+    color: 0x666666,
+  });
+  public vectorHover = true;
+  public vectorHoverMaterial = new LineBasicMaterial({
+    color: 0xeeeeee,
+  });
+  public vectorHoverScale = 1.02;
+  public vectorHoverAnimationDuration = 200;
+  public vectorHoverease = (t: number) => t;
+  public geojson: FeatureCollection | undefined;
+  public countries = true;
+  public detailLevel: 'low' | 'medium' | 'high' = 'medium';
+  public axis = true;
+  public vectors = true;
+  private _earthTilt = false;
+  private axisGroup = new Group();
+  private vectorGroup = new Group();
+  private lineVectors: LineVector[] = [];
+  public intersectingVector: LineVector | null = null;
+  constructor() {
     super();
-    this.mesh = new Mesh();
-    this.axis = new Group();
-    this.vectors = new Group();
-    this.lineVectors = [];
-    this.globeMaterial = new MeshBasicMaterial({
-      color: 0x080808,
-      transparent: true,
-      opacity: 0.9,
-    });
-    this.axisMaterial = new LineBasicMaterial({
-      color: 0x444444,
-    });
-    this.vectorMaterial = new LineBasicMaterial({
-      color: 0x666666,
-    });
-    this.vectorHover = true;
-    this.vectorHoverMaterial = new LineBasicMaterial({
-      color: 0xeeeeee,
-    });
-    this.vectorHoverScale = 1.02;
-    this.vectorHoverAnimationDuration = 200;
-    this.vectorHoverease = (t: number) => t;
-    this._earthTilt = false;
     this.earthTilt = this._earthTilt;
-    this.intersectingVector = null;
-
     this.createMesh();
     this.createAxis();
+    this.createVectors();
     this.add(this.mesh);
-    this.add(this.axis);
-
-    if (geojson) {
-      this.createVectors(geojson);
-      this.add(this.vectors);
-    } else {
-      getGeojson(detailLevel, countries)
-        .then((geojson) => {
-          this.createVectors(geojson);
-          this.add(this.vectors);
-        })
-        .catch((error) => {
-          console.error('Error loading geojson:', error);
-        });
-    }
+    if (this.axis) this.add(this.axisGroup);
+    if (this.vectors) this.add(this.vectorGroup);
   }
 
   get earthTilt() {
@@ -104,7 +78,7 @@ class Globe extends Group {
       const geometry = new RingGeometry(1, 1, 48);
       geometry.rotateY((lon * Math.PI) / 180);
       const line = new LineLoop(geometry, material);
-      this.axis.add(line);
+      this.axisGroup.add(line);
     }
 
     for (let lat = -80; lat <= 80; lat += 10) {
@@ -113,19 +87,37 @@ class Globe extends Group {
       geometry.rotateX(Math.PI / 2);
       geometry.translate(0, Math.sin((lat * Math.PI) / 180), 0);
       const line = new LineLoop(geometry, material);
-      this.axis.add(line);
+      this.axisGroup.add(line);
     }
-
-    this.axis.renderOrder = 1;
+    this.axisGroup.renderOrder = 1;
   }
 
-  private createVectors(geojson: FeatureCollection) {
-    for (const feature of geojson.features) {
-      const lineVector = new LineVector(feature, this.vectorMaterial);
-      lineVector.lines.renderOrder = 2;
-      this.lineVectors.push(lineVector);
-      this.vectors.add(lineVector.lines);
+  private getVectorData(callback: (geojson: FeatureCollection) => void) {
+    if (this.geojson) {
+      callback(this.geojson);
+    } else {
+      getGeojson(this.detailLevel, this.countries)
+        .then((geojson) => {
+          callback(geojson);
+        })
+        .catch((error) => {
+          console.error('Error loading geojson:', error);
+        });
     }
+  }
+
+  private createVectors() {
+    this.getVectorData((geojson) => {
+      if (!geojson) {
+        return;
+      }
+      for (const feature of geojson.features) {
+        const lineVector = new LineVector(feature, this.vectorMaterial);
+        lineVector.lines.renderOrder = 2;
+        this.lineVectors.push(lineVector);
+        this.vectorGroup.add(lineVector.lines);
+      }
+    });
   }
 
   private getIntersectingLineVector(point: Vector2) {
