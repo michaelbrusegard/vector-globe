@@ -1,0 +1,11 @@
+{
+  "root": true,
+  "pages": [
+    "---Guides---",
+    "index",
+    "---API---",
+    "---Links---",
+    "[npm](https://www.npmjs.com/package/vector-globe)",
+    "references"
+  ]
+}

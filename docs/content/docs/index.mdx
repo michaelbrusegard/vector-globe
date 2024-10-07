@@ -1,0 +1,84 @@
+---
+title: Quick Start
+description: Getting Started with Vector Globe
+icon: Play
+---
+
+## Introduction
+
+## Installation
+
+Scaffold a website with your chosen framework (Next.js, Angular, Vue, etc.).
+
+Install the package from the npm registry using your package manager of choice.
+
+<Tabs id='package-manager' persist items={['npm', 'pnpm', 'yarn', 'bun']}>
+
+```bash tab="npm"
+npm install vector-globe
+```
+
+```bash tab="pnpm"
+pnpm install vector-globe
+```
+
+```bash tab="yarn"
+yarn add vector-globe
+```
+
+```bash tab="bun"
+bun add vector-globe
+```
+
+</Tabs>
+
+For a simple HTML website you can load the script [directly](/docs/frameworks#html).
+
+## Initialization
+
+To initialize the Vector Globe, import the `VectorGlobe` class and create a new instance.
+
+```javascript
+import VectorGlobe from 'vector-globe';
+
+const globe = new VectorGlobe();
+```
+
+You can pass an optional container element to the constructor to render the globe in it:
+
+```javascript
+const container = document.querySelector('div');
+
+const globe = new VectorGlobe(container);
+```
+
+If not provided, the globe will be rendered in the body element.
+
+## Start & Stop
+
+To start the globe, call the `start` method on the instance.
+
+```javascript
+globe.start();
+```
+
+And to stop the globe, call the `stop` method.
+
+```javascript
+globe.stop();
+```
+
+<Callout type='warn'>
+  Call `stop` before removing the globe from the DOM to avoid memory leaks and clean up resources.
+</Callout>
+
+## FAQ
+
+Some common questions you may encounter.
+
+<Accordions>
+  <Accordion id='accessibility' title='How is Vector Globe accessible?'>
+  </Accordion>
+  <Accordion id='custom-vectors' title='How can I use custom vectors?'>
+  </Accordion>
+</Accordions>
