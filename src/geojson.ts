@@ -18,23 +18,20 @@ async function getGeojson(
   detailLevel: 'low' | 'medium' | 'high',
   countries: boolean,
 ): Promise<FeatureCollection> {
-  let data;
+  let url;
 
   if (detailLevel === 'high') {
-    data = countries
-      ? await import('./geodata/ne_10m_countries.json')
-      : await import('./geodata/ne_10m_land.json');
+    url = countries ? '/ne_10m_countries.json' : '/ne_10m_land.json';
   } else if (detailLevel === 'medium') {
-    data = countries
-      ? await import('./geodata/ne_50m_countries.json')
-      : await import('./geodata/ne_50m_land.json');
+    url = countries ? '/ne_50m_countries.json' : '/ne_50m_land.json';
   } else {
-    data = countries
-      ? await import('./geodata/ne_110m_countries.json')
-      : await import('./geodata/ne_110m_land.json');
+    url = countries ? '/ne_110m_countries.json' : '/ne_110m_land.json';
   }
 
-  return data.default as FeatureCollection;
+  const response = await fetch(url);
+  const data = (await response.json()) as FeatureCollection;
+
+  return data;
 }
 
 export { getGeojson, type Feature, type FeatureCollection };

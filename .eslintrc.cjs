@@ -2,13 +2,13 @@
 const config = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: true,
+    project: '**/tsconfig.json',
   },
   plugins: ['@typescript-eslint'],
   extends: [
     'plugin:@typescript-eslint/recommended-type-checked',
     'plugin:@typescript-eslint/stylistic-type-checked',
-    'plugin:prettier/recommended',
+    'prettier',
   ],
   rules: {
     '@typescript-eslint/array-type': 'off',
@@ -30,6 +30,7 @@ const config = {
       },
     ],
   },
+  ignorePatterns: ['dist', 'node_modules', '.next', 'docs'],
 };
 
 module.exports = config;

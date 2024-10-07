@@ -34,7 +34,7 @@ class VectorGlobe {
     geojson?: FeatureCollection;
     detailLevel?: 'low' | 'medium' | 'high';
     countries?: boolean;
-  }) {
+  } = {}) {
     this.container = container;
     this.container.style.outline = 'none';
     this.container.style.position = 'relative';
